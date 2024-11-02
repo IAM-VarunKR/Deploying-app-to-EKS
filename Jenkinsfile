@@ -13,7 +13,7 @@ pipeline {
             steps {
                 checkout([$class: 'GitSCM', 
             branches: [[name: '*/main']], 
-            userRemoteConfigs: [[url: 'https://github.com/IAM-VarunKR/Deploying-app-to-EKS.git', credentialsId: 'github-token']]
+            userRemoteConfigs: [[url: 'https://github.com/IAM-VarunKR/Deploying-app-to-EKS.git', credentialsId: 'github_PAT']]
         ])
             }
         }
