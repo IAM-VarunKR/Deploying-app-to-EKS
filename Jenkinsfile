@@ -1,18 +1,69 @@
 pipeline {
     agent any
+    environment {
+        // Define your ECR repository URL and AWS region
+        ECR_REPOSITORY = '345594595830.dkr.ecr.us-east-1.amazonaws.com/java-microservice' // e.g., <account-id>.dkr.ecr.<region>.amazonaws.com/your-repo-name
+        AWS_REGION = 'us-east-1' // e.g., us-east-1
+        AWS_CREDENTIALS_ID = 'aws-creds' // Jenkins credentials ID for AWS
+        SONARQUBE_URL = 'http://3.95.7.57:9000/' // SonarQube server URL
+        SONARQUBE_CREDENTIALS_ID = 'sonar-token' // Jenkins credentials ID for SonarQube
+    }
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                sh 'mvn clean package'
+                git 'https://github.com/your-username/Deploying-app-to-EKS.git' // Replace with your repo
             }
         }
-        stage('Docker Build & Push') {
+        stage('Build') {
             steps {
                 script {
-                    docker.build("YOUR_ECR_REPOSITORY_URL/deploying-app-to-eks:${env.BUILD_ID}").push()
+                    // Build the application with Maven
+                    sh 'mvn clean package'
                 }
             }
         }
-        // Add additional stages as needed
+        stage('Test') {
+            steps {
+                script {
+                    // Run tests using Maven
+                    sh 'mvn test'
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // Run SonarQube analysis
+                    withCredentials([usernamePassword(credentialsId: SONARQUBE_CREDENTIALS_ID, usernameVariable: 'SONAR_USER', passwordVariable: 'SONAR_PASSWORD')]) {
+                        sh "mvn sonar:sonar -Dsonar.projectKey=com.example:DeployingAppToEKS -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.login=\$SONAR_USER -Dsonar.password=\$SONAR_PASSWORD"
+                    }
+                }
+            }
+        }
+        stage('Login to ECR') {
+            steps {
+                script {
+                    // Login to AWS ECR
+                    def ecrLogin = sh(script: "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY}", returnStdout: true)
+                    echo "${ecrLogin}"
+                }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image
+                    sh "docker build -t ${ECR_REPOSITORY}:latest ."
+                }
+            }
+        }
+        stage('Push to ECR') {
+            steps {
+                script {
+                    // Push the Docker image to ECR
+                    sh "docker push ${ECR_REPOSITORY}:latest"
+                }
+            }
+        }
     }
 }
