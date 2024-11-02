@@ -20,8 +20,10 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Build the application with Maven
+                    // Using the configured Maven tool
+                    withMaven(maven: 'Maven 3.6') {
                     sh 'mvn clean package'
+                    }
                 }
             }
         }
