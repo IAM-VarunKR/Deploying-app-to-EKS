@@ -21,8 +21,10 @@ pipeline {
             steps {
                 script {
                     // Using the configured Maven tool
-                    dir('DeployingApptoEKS')withMaven(maven: 'Maven 3.6') {
-                    sh 'mvn clean package'
+                    dir('DeployingApptoEKS'){
+                        withMaven(maven: 'Maven 3.6') {
+                        sh 'mvn clean package'
+                        }
                     }
                 }
             }
