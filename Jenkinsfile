@@ -11,7 +11,10 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-username/Deploying-app-to-EKS.git' // Replace with your repo
+                checkout([$class: 'GitSCM', 
+            branches: [[name: '*/main']], 
+            userRemoteConfigs: [[url: 'https://github.com/IAM-VarunKR/Deploying-app-to-EKS.git', credentialsId: 'github-token']]
+        ])
             }
         }
         stage('Build') {
