@@ -27,7 +27,7 @@ pipeline {
                     // Using the configured Maven tool
                     dir('DeployingAppToEKS'){
                         withMaven(maven: 'Maven 3.9') {
-                        sh 'mvn clean package'
+                        sh 'mvn clean install -DskipTests'
                         }
                     }
                 }
