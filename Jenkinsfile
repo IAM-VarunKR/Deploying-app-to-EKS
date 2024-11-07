@@ -8,6 +8,10 @@ pipeline {
         SONARQUBE_URL = 'http://3.95.7.57:9000/' // SonarQube server URL
         SONARQUBE_CREDENTIALS_ID = 'sonar-token' // Jenkins credentials ID for SonarQube
     }
+
+    tools {
+        jdk 'Your_JDK_11_Name' // Replace with the name you configured in Global Tool Configuration
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -21,7 +25,7 @@ pipeline {
             steps {
                 script {
                     // Using the configured Maven tool
-                    dir('V:/Deploying-app-to-EKS/DeployingAppToEKS/'){
+                    dir('DeployingAppToEKS'){
                         withMaven(maven: 'Maven 3.6') {
                         sh 'mvn clean package'
                         }
