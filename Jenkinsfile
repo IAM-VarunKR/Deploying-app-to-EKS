@@ -10,7 +10,7 @@ pipeline {
     }
 
     tools {
-        jdk 'Your_JDK_11_Name' // Replace with the name you configured in Global Tool Configuration
+        jdk 'JDK11' // Replace with the name you configured in Global Tool Configuration
     }
     stages {
         stage('Checkout') {
